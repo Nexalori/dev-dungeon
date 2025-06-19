@@ -1,7 +1,12 @@
 package entities.levercommands;
+import core.level.Tile;
 
+import core.Game;
+import core.level.elements.tile.PitTile;
 import core.level.utils.Coordinate;
 import utils.ICommand;
+
+import java.util.List;
 
 /**
  * The BridgeControlCommand class is responsible for controlling the bridge in the Bridge Guard
@@ -24,6 +29,22 @@ public class BridgeControlCommand implements ICommand {
     this.bottomRight = bottomRight;
   }
 
+  private void setBridgeState(boolean toOpen){
+      List<Tile> bridge = Game.currentLevel().tilesInArea(topLeft, bottomRight);
+      bridge.stream()
+          .filter(t -> t instanceof PitTile)
+          .map(PitTile.class::cast)
+          .forEach(t -> {
+              if(toOpen){
+                  t.open();
+              }
+              else{
+                  t.close();
+              }
+          });
+
+  }
+
   /**
    * Raises the bridge. By opening the pits, the bridge is raised.
    *
@@ -33,6 +54,7 @@ public class BridgeControlCommand implements ICommand {
   @Override
   public void execute() {
     // TODO: Implement bridge raising
+      setBridgeState(true);
   }
 
   /**
@@ -44,5 +66,6 @@ public class BridgeControlCommand implements ICommand {
   @Override
   public void undo() {
     // TODO: Implement bridge lowering
+      setBridgeState(false);
   }
 }
